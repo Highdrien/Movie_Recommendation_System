@@ -9,26 +9,22 @@ import torch.optim as optim
 from model import get_model
 from dataloader import creates_generators
 
+import parameters as PARAM
+
 def train():
 
     train_loader, val_loader, test_loader = creates_generators()
 
-    # Paramètres d'entraînement
-    num_users = 944
-    num_items = 1682
-    embedding_dim = 50
-    lr = 0.001
-    num_epochs = 10
-
     # Instancier le modèle
-    model = get_model(num_users, num_items, embedding_dim)
+    model = get_model()
 
     # Définir la fonction de perte et l'optimiseur
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=lr)
+    optimizer = optim.Adam(model.parameters(), lr=PARAM.LR)
 
     # Entraînement du modèle
-    for epoch in range(num_epochs):
+    for epoch in range(PARAM.NUM_EPOCHS):
+        print('epoch:', epoch)
         model.train()
         train_loss = 0.0
 
@@ -39,7 +35,7 @@ def train():
             item_ids = inputs[:, 1]
 
             outputs = model(user_ids, item_ids)
-            loss = criterion(outputs.squeeze(), targets)
+            loss = criterion(outputs.squeeze(), targets.view(-1))
             loss.backward()
             optimizer.step()
 
@@ -52,7 +48,7 @@ def train():
         val_loss = 0.0
 
         with torch.no_grad():
-            for inputs, targets in val_loader:
+            for inputs, targets in tqdm(val_loader):
                 user_ids = inputs[:, 0]
                 item_ids = inputs[:, 1]
 
@@ -63,7 +59,9 @@ def train():
 
         val_loss /= len(val_loader)
 
-        print(f"Epoch {epoch+1}/{num_epochs}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
+        print(f"Epoch {epoch+1}/{PARAM.NUM_EPOCHS}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
+    
+    torch.save(model.state_dict(), "model_with_dropout.pth")
 
     # Évaluation finale sur l'ensemble de test
     # model.eval()

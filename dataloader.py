@@ -8,6 +8,8 @@ from sklearn.preprocessing import LabelEncoder
 
 import parameters as PARAM
 
+torch.random.seed()
+
 
 # Définir une classe de Dataset personnalisée
 class MovieDataset(Dataset):
@@ -25,24 +27,11 @@ class MovieDataset(Dataset):
 
 
 def creates_generators():
-    # Charger les données
+    # Load data
     data = pd.read_csv(PARAM.DATA_PATH)
-
-    num_users = len(np.unique(data['user_id']))
-    num_items = len(np.unique(data['item_id']))
-
-    print(num_users, num_items)
-    min_item_id = np.min(data['item_id'])
-    max_item_id = np.max(data['item_id'])
-    print(f"Min item_id: {min_item_id}, Max item_id: {max_item_id}")
 
     item_encoder = LabelEncoder()
     data['item_id'] = item_encoder.fit_transform(data['item_id'])
-
-    min_item_id = np.min(data['item_id'])
-    max_item_id = np.max(data['item_id'])
-    print(f"Min item_id: {min_item_id}, Max item_id: {max_item_id}")
-
 
     # Séparer les données en entrées (user_id, item_id) et cibles (rating)
     inputs = data[['user_id', 'item_id']].values
@@ -58,9 +47,9 @@ def creates_generators():
     test_dataset = MovieDataset(test_inputs, test_targets)
 
     # Créer des DataLoaders pour faciliter l'itération sur les données
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=32)
-    test_loader = DataLoader(test_dataset, batch_size=32)
+    train_loader = DataLoader(train_dataset, batch_size=PARAM.BATCH_SIZE, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=PARAM.BATCH_SIZE, shuffle=True, drop_last=True)
+    test_loader = DataLoader(test_dataset, batch_size=PARAM.BATCH_SIZE)
 
     return train_loader, val_loader, test_loader
 
