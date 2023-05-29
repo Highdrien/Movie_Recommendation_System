@@ -32,8 +32,6 @@ def train_logger(config):
         first_line = 'step,' + config.model.loss + ',val ' + config.model.loss
         for metric in list(filter(lambda x: config.metrics[x], config.metrics)):
             first_line += ',' + metric
-            if metric == "PSNR":
-                first_line += ' (dB)'
             first_line += ',val ' + metric
         f.write(first_line + '\n')
     f.close()
@@ -87,11 +85,10 @@ def train_step_logger(path, epoch, train_loss, val_loss, train_metrics, val_metr
     file.close()
 
 
-def test_logger(path, metrics, values, upscale_factor):
+def test_logger(path, metrics, values):
     """
     creates a file 'test_log.txt' in the path containing for each line: metrics[i]: values[i]
     """
     with open(os.path.join(path, 'test_log.txt'), 'a') as f:
-        f.write('upscale_factor: ' + str(upscale_factor) + '\n')
         for i in range(len(metrics)):
             f.write(metrics[i] + ': ' + str(values[i]) + '\n')
