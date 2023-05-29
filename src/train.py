@@ -31,7 +31,7 @@ def train(config):
     ###############################################################
     # Start Training                                              #
     ###############################################################
-    for epoch in range(config.train.epochs):
+    for epoch in range(1, config.train.epochs + 1):
         model.train()
         train_loss = []
         
@@ -67,7 +67,7 @@ def train(config):
             for inputs, targets in val_range:
                 user_ids = inputs[:, 0]
                 item_ids = inputs[:, 1]
-
+                
                 outputs = model(user_ids, item_ids)
                 loss = criterion(outputs.squeeze(), targets)
                 
