@@ -1,0 +1,41 @@
+config_metadata: 'Saving time : 05/29/2023, 16:25:12'
+name: 'experiment'
+
+# model options
+model:
+    loss: 'MSE'
+    learning_rate: 0.001
+    embedding_dim: 50
+    dropout: 0.1
+    save_checkpoint: 'best'
+
+# data options
+data:
+    path: 'data\Dataset.csv'
+    nb_users: 944
+    nb_items: 1682
+
+# metrics options
+metrics:
+    truc: false
+
+# train options
+train:
+    epochs: 5
+    batch_size: 32
+    save_learning_curves: true
+    logs_path: 'logs'
+    shuffle: true
+    drop_last: false
+
+# val options
+val:
+    batch_size: 32
+    shuffle: true
+    drop_last: true
+
+# test options
+test:
+    batch_size: 32
+    shuffle: false
+    drop_last: false

@@ -1,18 +1,15 @@
-import numpy as np
-
 from tqdm import tqdm
 
 import torch
 import torch.nn as nn
 
-from model import get_model
-from dataloader import creates_generators
+from src.model import get_model
+from src.dataloader import creates_generators
 
-import parameters as PARAM
 
-def test(checkpoint_path):
+def test(config):
 
-    _, _, test_loader = creates_generators()
+    _, _, test_loader = creates_generators(config)
 
     # Instancier le modèle
     model = get_model()

@@ -1,0 +1,43 @@
+name: experiment                        # name of the config. DOES NOT HAVE SPACE ON IT
+
+
+# model options
+model:
+    loss: MSE                           # Loss function
+    learning_rate: 0.001                # learning rate
+    embedding_dim: 50                   # dimension of embedding
+    dropout: 0.1                        # dropouy probability
+    save_checkpoint: best               # if you want save the models weight: all, last, best or false
+
+
+# data options
+data:
+    path: data\Dataset.csv              # data path
+    nb_users: 944
+    nb_items: 1682
+
+metrics:
+    truc: false
+
+# train options
+train:
+    epochs: 5                           # number of epochs
+    batch_size: 32                      # training batch size
+    save_learning_curves: true          # save the learning curves
+    logs_path: logs                     # path to logs folder
+    shuffle: true                       # shuffle the data at each epoch
+    drop_last: false                    # drop the last batch if there dont have a complete batch
+
+
+# validation options
+val:
+    batch_size: 32                      # validation batch size
+    shuffle: true                       # shuffle the data at each epoch
+    drop_last: true                     # drop the last batch if there dont have a complete batch
+
+
+# test options
+test:
+    batch_size: 32                      # validation batch size
+    shuffle: false                      # shuffle the data
+    drop_last: false                    # drop the last batch if there dont have a complete batch

@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 
-import parameters as PARAM
 
 # Définir le modèle de recommandation
 class MovieRecommendationModel(nn.Module):
@@ -27,8 +26,8 @@ class MovieRecommendationModel(nn.Module):
         return x
 
 
-def get_model():
-    return MovieRecommendationModel(num_users=PARAM.NUM_USERS,
-                                    num_items=PARAM.NUM_ITEMS,
-                                    embedding_dim=PARAM.EMBEDDING_DIM,
-                                    dropout=PARAM.DROPOUT)
+def get_model(config):
+    return MovieRecommendationModel(num_users=config.data.nb_users,
+                                    num_items=config.data.nb_items,
+                                    embedding_dim=config.model.embedding_dim,
+                                    dropout=config.model.dropout)
