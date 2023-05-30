@@ -6,7 +6,7 @@ model:
     loss: MSE                           # Loss function
     learning_rate: 0.001                # learning rate
     embedding_dim: 64                   # dimension of embedding
-    dropout: 0.25                       # dropouy probability
+    dropout: 0.15                       # dropouy probability
     save_checkpoint: best               # if you want save the models weight: all, last, best or false
 
 
