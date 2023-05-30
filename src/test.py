@@ -22,7 +22,7 @@ def test(logging_path, config):
     model.load_state_dict(torch.load(checkpoint_path))
 
     # Définir la loss
-    criterion = nn.MSELoss()
+    criterion = torch.nn.CrossEntropyLoss()
 
     # Évaluation finale sur l'ensemble de test
     model.eval()
@@ -33,12 +33,10 @@ def test(logging_path, config):
             user_ids = inputs[:, 0]
             item_ids = inputs[:, 1]
             
-            if user_ids.shape[0] == config.test.batch_size:
+            outputs = model(user_ids, item_ids)
+            loss = criterion(outputs.squeeze(), targets)
 
-                outputs = model(user_ids, item_ids)
-                loss = criterion(outputs.squeeze(), targets)
-
-                test_loss.append(loss.item())
+            test_loss.append(loss.item())
             
 
     test_loss = np.mean(test_loss)

@@ -22,7 +22,7 @@ def train(config):
     model = get_model(config)
 
     # Définir la fonction de perte et l'optimiseur
-    criterion = nn.MSELoss()
+    criterion = torch.nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=config.model.learning_rate)
 
     logging_path = train_logger(config)
@@ -43,13 +43,11 @@ def train(config):
             item_ids = inputs[:, 1]
 
             outputs = model(user_ids, item_ids)
-            loss = criterion(outputs.squeeze(), targets.view(-1))
+            loss = criterion(outputs.squeeze(), targets)
             loss.backward()
             optimizer.step()
 
             train_loss.append(loss.item())
-
-            # train_loss += loss.item() * inputs.size(0)
 
             train_range.set_description("TRAIN -> epoch: %4d || loss: %4.4f" % (epoch, np.mean(train_loss)))
             train_range.refresh()
@@ -72,7 +70,6 @@ def train(config):
                 loss = criterion(outputs.squeeze(), targets)
                 
                 val_loss.append(loss.item())
-                # val_loss += loss.item() * inputs.size(0)
 
                 val_range.set_description("VAL   -> epoch: %4d || val_loss: %4.4f" % (epoch, np.mean(val_loss)))
                 val_range.refresh()

@@ -21,7 +21,9 @@ class MovieDataset(Dataset):
 
     def __getitem__(self, idx):
         input_tensor = self.inputs[idx]
-        target_tensor = self.targets[idx]
+        target_tensor = self.targets[idx] - 1
+        target_tensor = torch.nn.functional.one_hot(target_tensor.long(), num_classes=5)
+        target_tensor = target_tensor.type(torch.float)
         return input_tensor, target_tensor
 
 
