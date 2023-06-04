@@ -1,66 +1,31 @@
-import os
 import numpy as np
 import pandas as pd
 import torch
-from torch.utils.data import Dataset, DataLoader
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
 
 
-torch.random.seed()
-
-
-# Dataset class
-class MovieDataset(Dataset):
-    def __init__(self, inputs, targets):
-        self.inputs = torch.tensor(inputs, dtype=torch.long)
-        self.targets = torch.tensor(targets, dtype=torch.float)
-
-    def __len__(self):
-        return len(self.inputs)
-
-    def __getitem__(self, idx):
-        input_tensor = self.inputs[idx]
-        target_tensor = self.targets[idx] - 1
-        target_tensor = torch.nn.functional.one_hot(target_tensor.long(), num_classes=5)
-        target_tensor = target_tensor.type(torch.float)
-        return input_tensor, target_tensor
-
-
-def creates_generators(config):
+def get_data(config):
     # Load data
     data = pd.read_csv(config.data.path)
 
-    item_encoder = LabelEncoder()
-    data['item_id'] = item_encoder.fit_transform(data['item_id'])
+    num_users = config.data.nb_users
+    num_items = config.data.nb_items
 
-    # split data: (user_id, item_id) and target (rating)
-    inputs = data[['user_id', 'item_id']].values
-    targets = data['rating'].values
+    # Get edge_index
+    user_ids = torch.tensor(data['user_id'].values, dtype=torch.long)
+    item_ids = torch.tensor(data['item_id'].values, dtype=torch.long) - 1
+    edge_index = torch.stack([user_ids, item_ids + num_users], dim=0)
 
-    # split data: train, val and test
-    train_inputs, test_inputs, train_targets, test_targets = train_test_split(inputs, targets, test_size=0.2, random_state=42)
-    train_inputs, val_inputs, train_targets, val_targets = train_test_split(train_inputs, train_targets, test_size=0.2, random_state=42)
-
-    # Create generators
-    train_dataset = MovieDataset(train_inputs, train_targets)
-    val_dataset = MovieDataset(val_inputs, val_targets)
-    test_dataset = MovieDataset(test_inputs, test_targets)
-
-    # use dataloader
-    train_loader = DataLoader(train_dataset, 
-                            batch_size=config.train.batch_size, 
-                            shuffle=config.train.shuffle,
-                            drop_last=config.train.drop_last)
+    # Get rating matrix
+    rating_matrix = np.zeros((num_users, num_items))
+    for _, row in data.iterrows():
+        user_id = row['user_id']
+        item_id = row['item_id'] - 1
+        rating = row['rating']
+        rating_matrix[user_id, item_id] = rating
     
-    val_loader = DataLoader(val_dataset, 
-                            batch_size=config.val.batch_size, 
-                            shuffle=config.val.shuffle,
-                            drop_last=config.val.drop_last)
-    
-    test_loader = DataLoader(test_dataset, 
-                            batch_size=config.test.batch_size, 
-                            shuffle=config.test.shuffle,
-                            drop_last=config.test.drop_last)
+    target = torch.tensor(rating_matrix)
 
-    return train_loader, val_loader, test_loader
+    user_ids = torch.arange(num_users).long()
+    item_ids = torch.arange(num_items).long()
+
+    return user_ids, item_ids, edge_index, target

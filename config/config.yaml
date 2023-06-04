@@ -40,4 +40,4 @@ val:
 test:
     batch_size: 32                      # validation batch size
     shuffle: false                      # shuffle the data
-    drop_last: false                    # drop the last batch if there dont have a complete batch
+    drop_last: true                     # drop the last batch if there dont have a complete batch
