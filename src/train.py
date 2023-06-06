@@ -63,7 +63,7 @@ def train(config):
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
                 best_epoch = epoch
-                current_best = False
+                current_best = True
 
         epochs_range.set_description("epoch: %4d || loss: %4.4f || val_loss: %4.4f" % (epoch, train_loss, val_loss))
         epochs_range.refresh()
@@ -76,11 +76,11 @@ def train(config):
             save_checkpoint_all(model, logging_path, epoch)
 
         elif config.model.save_checkpoint == 'best' and current_best:
-            save_checkpoint_best(model, logging_path, epoch, val_loss)
+            save_checkpoint_best(model, logging_path, epoch)
 
     
     if config.model.save_checkpoint == 'best':
-        save_checkpoint_best(model, logging_path, epoch, best_epoch, val_loss, best_val_loss, end_training=True)
+        save_checkpoint_best(model, logging_path, best_epoch, end_training=True)
 
     elif config.model.save_checkpoint == 'last':
         save_checkpoint_last(config, model, logging_path)
