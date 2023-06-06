@@ -12,7 +12,8 @@ class MovieRecommendationModel(nn.Module):
                  embedding_dim: int, 
                  hidden_layer_1: int, 
                  hidden_layer_2: int,
-                 dropout: float):
+                 dropout: float,
+                 sigmoid: bool):
         super(MovieRecommendationModel, self).__init__()
         self.user_embeddings = nn.Embedding(num_users, embedding_dim)
         self.item_embeddings = nn.Embedding(num_items, embedding_dim)
@@ -20,6 +21,7 @@ class MovieRecommendationModel(nn.Module):
         self.conv2 = GCNConv(hidden_layer_1, hidden_layer_2)
         self.dropout = nn.Dropout(dropout)
         self.num_users = num_users
+        self.sigmoid = sigmoid
 
     def forward(self, user_ids, item_ids, edge_index):
         user_embeds = self.user_embeddings(user_ids)
@@ -35,7 +37,9 @@ class MovieRecommendationModel(nn.Module):
         items = x[self.num_users:, :]
 
         result = torch.matmul(users, items.t())
-        result = 4 * torch.sigmoid(result) + 1
+
+        if self.sigmoid:
+            result = 4 * torch.sigmoid(result) + 1
 
         return result
 
@@ -46,4 +50,5 @@ def get_model(config):
                                     embedding_dim=config.model.embedding_dim,
                                     hidden_layer_1=config.model.hidden_layer_1,
                                     hidden_layer_2=config.model.hidden_layer_2,
-                                    dropout=config.model.dropout)
+                                    dropout=config.model.dropout,
+                                    sigmoid=config.model.sigmoid_at_the_end)

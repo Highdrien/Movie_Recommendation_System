@@ -9,6 +9,7 @@ model:
     hidden_layer_1: 32                  # output dimention of the first hidden layer
     hidden_layer_2: 8                   # output dimention of the second hidden layer
     dropout: 0.10                       # dropouy probability
+    sigmoid_at_the_end: false           # put a 4*sigmoid+1 function at the end of the model and have result between 1 and 5
     save_checkpoint: best               # if you want save the models weight: all, last, best or false
 
 
