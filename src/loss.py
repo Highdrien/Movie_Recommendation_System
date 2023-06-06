@@ -16,8 +16,9 @@ class MaskedMSELoss(nn.Module):
         target = target.flatten().float()
         predict = predict.flatten().float()
         mask = (predict != 0).float()       # Créer un masque binaire où 0 devient 0 et tout autre nombre devient 1
+        masked_predict = predict * mask  # Appliquer le masque à la prédiction
         masked_target = target * mask       # Appliquer le masque à la cible
-        loss = self.mse_loss(predict, masked_target)
+        loss = self.mse_loss(masked_predict, masked_target)
         loss = torch.mean(loss)             # Prendre la moyenne de la loss sur tous les éléments
         return loss
 
