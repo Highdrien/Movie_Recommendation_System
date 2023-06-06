@@ -37,7 +37,7 @@ def main(options):
         config = load_config(config_path)
         test(options['path'], config)
     
-    if options['mode'] == 'train_and_test':
+    elif options['mode'] == 'train_and_test':
         print('---train---')
         config = load_config(options['config_path'])
         logging_path = train(config)

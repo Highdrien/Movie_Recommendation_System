@@ -5,10 +5,10 @@ name: experiment                        # name of the config. DOES NOT HAVE SPAC
 model:
     loss: MaskedMSELoss                 # Loss function
     learning_rate: 0.001                # learning rate
-    embedding_dim: 64                   # dimension of embedding
-    hidden_layer_1: 32                  # output dimention of the first hidden layer
-    hidden_layer_2: 8                   # output dimention of the second hidden layer
-    dropout: 0.10                       # dropouy probability
+    embedding_dim: 32                   # dimension of embedding
+    hidden_layer_1: 64                  # output dimention of the first hidden layer
+    hidden_layer_2: 32                  # output dimention of the second hidden layer
+    dropout: 0.15                       # dropouy probability
     sigmoid_at_the_end: false            # put a 4*sigmoid+1 function at the end of the model and have result between 1 and 5
     save_checkpoint: best               # if you want save the models weight: all, last, best or false
 
