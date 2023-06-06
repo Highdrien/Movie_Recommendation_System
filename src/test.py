@@ -1,20 +1,26 @@
-from tqdm import tqdm
 import numpy as np
 
 import torch
-import torch.nn as nn
 
 from src.model import get_model
-from src.dataloader import creates_generators
+from src.loss import MaskedMSELoss
+from src.dataloader import get_data
 from src.checkpoints import get_checkpoint_path
 
 from config.utils import test_logger
 
 def test(logging_path, config):
 
-    _, _, test_loader = creates_generators(config)
+    # get data
+    user_ids, item_ids, edge_index, target = get_data(config)
 
-    # Instancier le modèle
+    # Split target for train and validation
+    num_users = target.shape[0]
+    split_2 = int(num_users * config.data.split_2) + int(num_users * config.data.split_1)
+    test_target = target[split_2:]
+
+    del target
+
     model = get_model(config)
 
     # Load model's weight
@@ -22,24 +28,17 @@ def test(logging_path, config):
     model.load_state_dict(torch.load(checkpoint_path))
 
     # Définir la loss
-    criterion = torch.nn.CrossEntropyLoss()
+    criterion = MaskedMSELoss()
 
     # Évaluation finale sur l'ensemble de test
     model.eval()
-    test_loss = []
 
     with torch.no_grad():
-        for inputs, targets in tqdm(test_loader):
-            user_ids = inputs[:, 0]
-            item_ids = inputs[:, 1]
-            
-            outputs = model(user_ids, item_ids)
-            loss = criterion(outputs.squeeze(), targets)
+        model.eval()
+        test_predict = model(user_ids, item_ids, edge_index)[split_2:]
+        loss = criterion(target=test_target, predict=test_predict)
+        test_loss = loss.item()
 
-            test_loss.append(loss.item())
-            
-
-    test_loss = np.mean(test_loss)
-
-    test_logger(logging_path, ['MSE'], [test_loss])
+    print('test loss:', test_loss)
+    test_logger(logging_path, ['MaskedMSELoss'], [test_loss])
 

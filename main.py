@@ -4,7 +4,7 @@ import argparse
 from easydict import EasyDict as edict
 
 from src.train import train
-# from src.test import test
+from src.test import test
 
 
 def load_config(path='configs/config.yaml'):
@@ -32,10 +32,10 @@ def main(options):
         config = load_config(options['config_path'])
         train(config)
     
-    # elif options['mode'] == 'test':
-    #     config_path = os.path.join(options['path'], find_config(options['path']))
-    #     config = load_config(config_path)
-    #     test(options['path'], config)
+    elif options['mode'] == 'test':
+        config_path = os.path.join(options['path'], find_config(options['path']))
+        config = load_config(config_path)
+        test(options['path'], config)
 
     else:
         print('ERROR: mode incorect. You chose: ' + options['mode'] + '. Please chose a mode between:')
