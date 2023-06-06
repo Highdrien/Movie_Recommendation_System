@@ -24,6 +24,9 @@ class MovieRecommendationModel(nn.Module):
 
         result = torch.matmul(users, items.t())
 
+        # Avoid numbers less that 1 or more that 5
+        result = torch.clamp(result, min=1, max=5)
+
         return result
 
 
