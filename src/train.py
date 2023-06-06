@@ -82,4 +82,5 @@ def train(config):
 
     if config.train.save_learning_curves:
         save_learning_curves(logging_path)
-    
+
+    return logging_path

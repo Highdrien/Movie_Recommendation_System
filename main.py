@@ -36,11 +36,19 @@ def main(options):
         config_path = os.path.join(options['path'], find_config(options['path']))
         config = load_config(config_path)
         test(options['path'], config)
+    
+    if options['mode'] == 'train_and_test':
+        print('---train---')
+        config = load_config(options['config_path'])
+        logging_path = train(config)
+        print('---test---')
+        test(logging_path, config)
 
     else:
         print('ERROR: mode incorect. You chose: ' + options['mode'] + '. Please chose a mode between:')
         print('- train')
         print('- test')
+        print('- train_and_test')
         exit()
 
 
