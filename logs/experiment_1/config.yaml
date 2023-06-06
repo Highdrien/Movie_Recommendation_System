@@ -1,0 +1,27 @@
+config_metadata: 'Saving time : 06/06/2023, 19:31:46'
+name: 'experiment'
+
+# model options
+model:
+    loss: 'MaskedMSELoss'
+    learning_rate: 0.001
+    embedding_dim: 64
+    hidden_layer_1: 32
+    hidden_layer_2: 8
+    dropout: 0.1
+    sigmoid_at_the_end: false
+    save_checkpoint: 'best'
+
+# data options
+data:
+    path: 'data\Dataset.csv'
+    num_users: 944
+    num_items: 1682
+    split_1: 0.6
+    split_2: 0.2
+
+# train options
+train:
+    epochs: 200
+    save_learning_curves: true
+    logs_path: 'logs'
