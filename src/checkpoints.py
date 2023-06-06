@@ -19,7 +19,7 @@ def save_checkpoint_best(model, logging_path, epoch, best_epoch, val_loss, best_
     if not(end_training):
         # at the end of one epoch
         if val_loss < best_val_loss:
-            print('saving checkpoints')
+            # print('saving checkpoints')
             best_epoch, best_val_loss = epoch, val_loss
             torch.save(model.state_dict(), os.path.join(logging_path, 'model.pth'))
         
