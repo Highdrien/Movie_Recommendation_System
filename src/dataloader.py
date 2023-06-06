@@ -7,8 +7,8 @@ def get_data(config):
     # Load data
     data = pd.read_csv(config.data.path)
 
-    num_users = config.data.nb_users
-    num_items = config.data.nb_items
+    num_users = config.data.num_users
+    num_items = config.data.num_items
 
     # Get edge_index
     user_ids = torch.tensor(data['user_id'].values, dtype=torch.long)

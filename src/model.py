@@ -41,8 +41,8 @@ class MovieRecommendationModel(nn.Module):
 
 
 def get_model(config):
-    return MovieRecommendationModel(num_users=config.data.nb_users,
-                                    num_items=config.data.nb_items,
+    return MovieRecommendationModel(num_users=config.data.num_users,
+                                    num_items=config.data.num_items,
                                     embedding_dim=config.model.embedding_dim,
                                     hidden_layer_1=config.model.hidden_layer_1,
                                     hidden_layer_2=config.model.hidden_layer_2,
