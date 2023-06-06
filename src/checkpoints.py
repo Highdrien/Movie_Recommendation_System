@@ -12,24 +12,18 @@ def save_checkpoint_all(model, logging_path, epoch):
     torch.save(model.state_dict(), os.path.join(checkpoint_path, checkpoint_name))
 
 
-def save_checkpoint_best(model, logging_path, epoch, best_epoch, val_loss, best_val_loss, end_training=False):
+def save_checkpoint_best(model, logging_path, epoch, val_loss, end_training=False):
     """
     save the best training checkpoint acoording the validation's loss
     """
-    if not(end_training):
-        # at the end of one epoch
-        if val_loss < best_val_loss:
-            # print('saving checkpoints')
-            best_epoch, best_val_loss = epoch, val_loss
-            torch.save(model.state_dict(), os.path.join(logging_path, 'model.pth'))
+    if not(end_training):       # at the end of one epoch
+        best_epoch, best_val_loss = epoch, val_loss
+        torch.save(model.state_dict(), os.path.join(logging_path, 'model.pth'))
         
-    else:
-        # at the end of og the training
+    else:                       # at the end of the training
         old_name = os.path.join(logging_path, 'model.pth')
         new_name = os.path.join(logging_path, 'model' + str(best_epoch) + '.pth')
         os.rename(old_name, new_name)
-    
-    return best_epoch, best_val_loss
 
 
 def save_checkpoint_last(config, model, logging_path):
