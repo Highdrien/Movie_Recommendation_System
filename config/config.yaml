@@ -6,7 +6,7 @@ model:
     loss: MaskedMSELoss                 # Loss function
     learning_rate: 0.001                # learning rate
     hidden_layer_1: 16                  # output dimention of the first GCN
-    hidden_layer_2: 4                   # output dimention of the second GCN
+    hidden_layer_2: 8                   # output dimention of the second GCN
     hidden_layer_3: 2                   # output dimention of the linear layer
     dropout: 0.15                       # dropout probability
     end_function: sigmoid               # function at the end. can be sigmoid, clamp, tanh, None 
@@ -23,7 +23,7 @@ data:
 # train options
 train:
     epochs: 50                          # number of epochs
-    logs: false                         # save the experiments
+    logs: true                          # save the experiments
     save_learning_curves: true          # save the learning curves
     logs_path: logs                     # path to logs folder
 
