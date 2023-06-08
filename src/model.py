@@ -59,11 +59,74 @@ class MovieRecommendationModel(nn.Module):
             result = torch.clamp(result, min=1, max=5)
 
         return result
+    
+
+# Définir le modèle de recommandation avec GCN
+class MovieRecommendationModel_withMovieEmbedding(nn.Module):
+    def __init__(self,
+                 embedding_dim: int, 
+                 hidden_layer_1: int, 
+                 hidden_layer_2: int,
+                 hidden_layer_3: int,
+                 dropout: float,
+                 end_function: bool,
+                 num_items: int) -> None:
+        super(MovieRecommendationModel_withMovieEmbedding, self).__init__()
+        self.embedding = nn.Embedding(num_items + 1, embedding_dim)
+        self.conv1 = GCNConv(embedding_dim, hidden_layer_1)
+        self.conv2 = GCNConv(hidden_layer_1, hidden_layer_2)
+        self.linear = nn.Linear(hidden_layer_2, hidden_layer_3)
+        self.dropout = nn.Dropout(dropout)
+        self.end_function = end_function
+
+    def forward(self,
+                x: torch.tensor,
+                edge_index: torch.tensor,
+                num_users: int) -> torch.tensor:
+        users = torch.zeros(num_users).long()
+        items = x[num_users:] - num_users + 1
+        users_embedding = self.embedding(users)
+        items_embedding = self.embedding(items)
+        x = torch.concatenate((users_embedding, items_embedding), dim=0)
+        x = self.conv1(x, edge_index)
+        x = F.relu(x)
+        x = self.dropout(x)
+        x = self.conv2(x, edge_index)
+        x = F.relu(x)
+        x = self.dropout(x)
+        x = self.linear(x)
+        x = F.relu(x)
+        x = self.dropout(x)
+        users = x[:num_users, :]
+        items = x[num_users:, :]
+
+        result = torch.matmul(users, items.t())
+
+        if self.end_function == 'sigmoid':
+            result = 4 * torch.sigmoid(result) + 1
+        
+        elif self.end_function == 'clamp':
+            result = torch.clamp(result, min=1, max=5)
+
+        return result
 
 
 def get_model(config):
-    return MovieRecommendationModel(hidden_layer_1=config.model.hidden_layer_1,
-                                    hidden_layer_2=config.model.hidden_layer_2,
-                                    hidden_layer_3=config.model.hidden_layer_3,
-                                    dropout=config.model.dropout,
-                                    end_function=config.model.end_function)
+    if config.model.embedding_dim == 0:
+        print('model without movies embedding')
+        model = MovieRecommendationModel(hidden_layer_1=config.model.hidden_layer_1,
+                                         hidden_layer_2=config.model.hidden_layer_2,
+                                         hidden_layer_3=config.model.hidden_layer_3,
+                                         dropout=config.model.dropout,
+                                         end_function=config.model.end_function)
+    else:
+        print('model with movies embedding')
+        model = MovieRecommendationModel_withMovieEmbedding(embedding_dim=config.model.embedding_dim,
+                                                            hidden_layer_1=config.model.hidden_layer_1,
+                                                            hidden_layer_2=config.model.hidden_layer_2,
+                                                            hidden_layer_3=config.model.hidden_layer_3,
+                                                            dropout=config.model.dropout,
+                                                            end_function=config.model.end_function,
+                                                            num_items=config.data.num_items)
+    print(model)
+    return model
