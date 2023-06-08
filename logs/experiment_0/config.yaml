@@ -16,6 +16,7 @@ model:
 # data options
 data:
     path: 'data'
+    movie_title_path: data/Movie_Id_Titles.csv
     num_items: 1682
     split_1: 0.6
     split_2: 0.2
