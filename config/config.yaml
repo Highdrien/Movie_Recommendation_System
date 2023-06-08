@@ -5,6 +5,7 @@ name: experiment                        # name of the config. DOES NOT HAVE SPAC
 model:
     loss: MaskedMSELoss                 # Loss function
     learning_rate: 0.001                # learning rate
+    embedding_dim: 8                    # movie embedding dimention. If 0, use the model without embedding
     hidden_layer_1: 16                  # output dimention of the first GCN
     hidden_layer_2: 8                   # output dimention of the second GCN
     hidden_layer_3: 2                   # output dimention of the linear layer

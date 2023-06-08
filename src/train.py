@@ -29,7 +29,6 @@ def train(config):
 
     # Get model
     model = get_model(config)
-    print(model)
 
     # Loss and Optimizer
     criterion = MaskedMSELoss()

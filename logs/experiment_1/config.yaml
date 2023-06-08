@@ -1,11 +1,11 @@
-config_metadata: 'Saving time : 06/08/2023, 14:17:02'
+config_metadata: 'Saving time : 06/08/2023, 14:46:02'
 name: 'experiment'
 
 # model options
 model:
     loss: 'MaskedMSELoss'
     learning_rate: 0.001
-    embedding_dim: 0
+    embedding_dim: 8
     hidden_layer_1: 16
     hidden_layer_2: 8
     hidden_layer_3: 2
