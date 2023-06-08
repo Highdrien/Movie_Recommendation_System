@@ -5,25 +5,25 @@ name: experiment                        # name of the config. DOES NOT HAVE SPAC
 model:
     loss: MaskedMSELoss                 # Loss function
     learning_rate: 0.001                # learning rate
-    embedding_dim: 32                   # dimension of embedding
-    hidden_layer_1: 64                  # output dimention of the first hidden layer
-    hidden_layer_2: 32                  # output dimention of the second hidden layer
-    dropout: 0.15                       # dropouy probability
-    sigmoid_at_the_end: false            # put a 4*sigmoid+1 function at the end of the model and have result between 1 and 5
+    hidden_layer_1: 16                  # output dimention of the first GCN
+    hidden_layer_2: 4                   # output dimention of the second GCN
+    hidden_layer_3: 2                   # output dimention of the linear layer
+    dropout: 0.15                       # dropout probability
+    end_function: sigmoid               # function at the end. can be sigmoid, clamp, tanh, None 
     save_checkpoint: best               # if you want save the models weight: all, last, best or false
 
 
 # data options
 data:
-    path: data\Dataset.csv              # data path
-    num_users: 944
-    num_items: 1682
-    split_1: 0.6
-    split_2: 0.2
+    path: data                          # data folder
+    num_items: 1682                     # number of items (movie)
+    split_1: 0.6                        # proportion of the training dataset
+    split_2: 0.2                        # proportion of the validation dataset
 
 # train options
 train:
-    epochs: 200                         # number of epochs
+    epochs: 50                          # number of epochs
+    logs: false                         # save the experiments
     save_learning_curves: true          # save the learning curves
     logs_path: logs                     # path to logs folder
 

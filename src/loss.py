@@ -5,21 +5,15 @@ import torch.nn as nn
 class MaskedMSELoss(nn.Module):
     def __init__(self):
         super(MaskedMSELoss, self).__init__()
-        self.mse_loss = nn.MSELoss(reduction='none')
-        # self.clamp = clamp
+        self.mse_loss = nn.MSELoss(reduction='mean')
 
-    def forward(self, target: torch.tensor, predict: torch.tensor):
-        # if self.clamp:
-        #     # Avoid numbers less that 1 or more that 5
-        #     predict = torch.clamp(predict, min=1, max=5)
-        
+    def forward(self, target: torch.tensor, predict: torch.tensor):  
         target = target.flatten().float()
         predict = predict.flatten().float()
-        mask = (predict != 0).float()       # Créer un masque binaire où 0 devient 0 et tout autre nombre devient 1
-        masked_predict = predict * mask  # Appliquer le masque à la prédiction
-        masked_target = target * mask       # Appliquer le masque à la cible
+        mask = (target != 0).float()            # Créer un masque binaire où 0 devient 0 et tout autre nombre devient 1
+        masked_predict = predict * mask         # Appliquer le masque à la prédiction
+        masked_target = target * mask           # Appliquer le masque à la cible
         loss = self.mse_loss(masked_predict, masked_target)
-        loss = torch.mean(loss)             # Prendre la moyenne de la loss sur tous les éléments
         return loss
 
 

@@ -15,25 +15,29 @@ from config.utils import train_logger, train_step_logger
 def train(config):
 
     # get data
-    user_ids, item_ids, edge_index, target = get_data(config)
+    train_data = get_data(config, 'train')
+    val_data = get_data(config, 'val')
 
-    # Split target for train and validation
-    num_users = target.shape[0]
-    split_1 = int(num_users * config.data.split_1)
-    split_2 = int(num_users * config.data.split_2) + split_1
-    train_target = target[:split_1]
-    val_target = target[split_1:split_2]
+    train_num_users = train_data.get_num_user()
+    val_num_users = val_data.get_num_user()
 
-    del target
+    train_ids, train_edge_index = train_data.get_input()
+    val_ids, val_edge_index = val_data.get_input()
 
+    train_target = train_data.get_target()
+    val_target = val_data.get_target()
+
+    # Get model
     model = get_model(config)
+    print(model)
 
-    # Définir la fonction de perte et l'optimiseur
+    # Loss and Optimizer
     criterion = MaskedMSELoss()
     # criterion = AdvancedMaskedMSELoss()
     optimizer = optim.Adam(model.parameters(), lr=config.model.learning_rate)
 
-    logging_path = train_logger(config)
+    if config.train.logs:
+        logging_path = train_logger(config)
     best_epoch, best_val_loss = 0, 10e6
 
     train_loss_list = []
@@ -45,7 +49,7 @@ def train(config):
 
         # Training
         model.train()
-        train_predict = model(user_ids, item_ids, edge_index)[:split_1]
+        train_predict = model(train_ids, train_edge_index, train_num_users)
         loss = criterion(target=train_target, predict=train_predict)
         train_loss = loss.item()
         train_loss_list.append(train_loss)
@@ -56,7 +60,7 @@ def train(config):
         # Validation
         with torch.no_grad():
             model.eval()
-            val_predict = model(user_ids, item_ids, edge_index)[split_1:split_2]
+            val_predict = model(val_ids, val_edge_index, val_num_users)
             loss = criterion(target=val_target, predict=val_predict)
             val_loss = loss.item()
             val_loss_list.append(val_loss)
@@ -69,25 +73,28 @@ def train(config):
         epochs_range.refresh()
 
         # Save Scores in logs
-        train_step_logger(logging_path, epoch, train_loss, val_loss, [], [])
+        if config.train.logs:
+            train_step_logger(logging_path, epoch, train_loss, val_loss, [], [])
 
-        # Save model according the configuration
-        if config.model.save_checkpoint == 'all':
-            save_checkpoint_all(model, logging_path, epoch)
+            # Save model according the configuration
+            if config.model.save_checkpoint == 'all':
+                save_checkpoint_all(model, logging_path, epoch)
 
-        elif config.model.save_checkpoint == 'best' and current_best:
-            save_checkpoint_best(model, logging_path, epoch)
+            elif config.model.save_checkpoint == 'best' and current_best:
+                save_checkpoint_best(model, logging_path, epoch)
 
-    
-    if config.model.save_checkpoint == 'best':
-        save_checkpoint_best(model, logging_path, best_epoch, end_training=True)
+    # Save Scores in logs at the end of training
+    if config.train.logs:
+        if config.model.save_checkpoint == 'best':
+            save_checkpoint_best(model, logging_path, best_epoch, end_training=True)
 
-    elif config.model.save_checkpoint == 'last':
-        save_checkpoint_last(config, model, logging_path)
+        elif config.model.save_checkpoint == 'last':
+            save_checkpoint_last(config, model, logging_path)
 
-    if config.train.save_learning_curves:
-        save_learning_curves(logging_path)
+        if config.train.save_learning_curves:
+            save_learning_curves(logging_path)
 
     print('best val loss:', best_val_loss, 'in the epoch:', best_epoch)
 
-    return logging_path
+    if config.train.logs:
+        return logging_path
