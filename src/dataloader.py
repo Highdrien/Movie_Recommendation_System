@@ -47,11 +47,11 @@ class Data():
 
 
 def get_data(config, mode):
-    mode_posibilities = ['train', 'val', 'test']
+    mode_posibilities = ['train', 'val', 'test', 'predict']
 
     assert mode in mode_posibilities, "Please chose a mode in " + str(mode_posibilities)
 
-    data_path = os.path.join(config.data.path, mode + '.csv')
+    data_path = os.path.join(config.data.path, mode + '.csv') if mode != 'predict' else config.predict.src_path
     num_items = config.data.num_items
 
     return Data(data_path, num_items)

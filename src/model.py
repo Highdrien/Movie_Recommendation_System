@@ -128,5 +128,5 @@ def get_model(config):
                                                             dropout=config.model.dropout,
                                                             end_function=config.model.end_function,
                                                             num_items=config.data.num_items)
-    print(model)
+    # print(model)
     return model

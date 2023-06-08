@@ -26,3 +26,8 @@ train:
     logs: true
     save_learning_curves: true
     logs_path: 'logs'
+
+# prediction options
+predict:
+    src_path: data/prediction/ratings.csv
+    dst_path: data/prediction/predict.csv

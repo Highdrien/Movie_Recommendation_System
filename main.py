@@ -5,6 +5,7 @@ from easydict import EasyDict as edict
 
 from src.train import train
 from src.test import test
+from src.predict import predict
 
 
 def load_config(path='configs/config.yaml'):
@@ -43,12 +44,18 @@ def main(options):
         logging_path = train(config)
         print('---test---')
         test(logging_path, config)
+    
+    elif options['mode'] == 'predict':
+        config_path = os.path.join(options['path'], find_config(options['path']))
+        config = load_config(config_path)
+        predict(options['path'], config)
 
     else:
         print('ERROR: mode incorect. You chose: ' + options['mode'] + '. Please chose a mode between:')
         print('- train')
         print('- test')
         print('- train_and_test')
+        print('- predict')
         exit()
 
 
