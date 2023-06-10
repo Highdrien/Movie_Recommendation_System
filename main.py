@@ -34,7 +34,8 @@ def apply_random_search(config_path, steps):
     best_path, best_val_loss = "", 10e6
     create_logs_file()
     for step in range(steps):
-        print('random search: iteration' + str(step + 1) + '/' + str(steps))
+        print('\n ------------------------')
+        print('random search: iteration ' + str(step + 1) + '/' + str(steps))
         new_config = generate_random_config(config)
         path, val_loss = train(new_config)
         save_step(new_config, val_loss, path)
@@ -100,7 +101,7 @@ def main(options):
         predict(options['path'], config)
     
     elif options['mode'] == 'random_search':
-        apply_random_search(options[config_path], options['steps'])
+        apply_random_search(options['config_path'], options['steps'])
 
 
 if __name__ == "__main__":

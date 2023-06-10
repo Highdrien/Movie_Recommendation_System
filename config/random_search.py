@@ -3,7 +3,8 @@ import copy
 import random
 
 RANDOM_SEARCH_PATH = os.path.join('logs','random_search')
-RS_DICO = {'learning_rate':    [0.01, 0.005, 0.001],
+RANDOM_SEARCH_LOGS_PATH = os.path.join(RANDOM_SEARCH_PATH, 'random_search_logs.csv')
+RS_DICO = {'learning_rate':     [0.01, 0.005, 0.001],
             'embedding_dim':    [0, 0, 0, 4, 8, 16, 32],
             'hidden_layer_1':   [4, 8, 16, 34, 64],
             'hidden_layer_2':   [8, 16, 34],
@@ -11,6 +12,7 @@ RS_DICO = {'learning_rate':    [0.01, 0.005, 0.001],
             'dropout':          [0, 0.05, 0.1, 0.15],
             'middle_function':  ['relu', 'sigmoid', 'tanh', None],
             'end_function':     ['sigmoid', 'clamp', 'tanh', 'softmax', None]}
+
 
 def get_random_value(array):
     return array[random.randint(0, len(array) -1)]
@@ -29,7 +31,10 @@ def generate_random_config(config):
 
 
 def create_logs_file():
-    with open(os.path.join(RANDOM_SEARCH_PATH, 'random_search_logs.txt'), 'w') as f:
+    if not os.path.exists(RANDOM_SEARCH_PATH):
+        os.mkdir(RANDOM_SEARCH_PATH)
+
+    with open(RANDOM_SEARCH_LOGS_PATH, 'x') as f:
         line = 'experiement_path,best_loss_value'
         for key, _ in RS_DICO.items():
             line += ',' + str(key)
