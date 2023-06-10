@@ -1,3 +1,4 @@
+import os
 import torch
 
 from src.model import get_model
@@ -6,7 +7,7 @@ from src.checkpoints import get_checkpoint_path
 from src.utils import find_5_best_film_to_see
 
 
-def predict(logging_path, config):
+def predict(logging_path, config):    
 
     # Get data
     predict_data = get_data(config, 'predict')
@@ -25,8 +26,10 @@ def predict(logging_path, config):
         model.eval()
         prediction = model(predict_ids, predict_edge_index, predict_num_users)
     
-    save_prediction(prediction, predict_target, config.predict.dst_path)
-    find_5_best_film_to_see(config.predict.dst_path, config.data.movie_title_path)
+    dst_path = config.predict.dst_path[:-4] + '_' + os.path.basename(logging_path.rstrip(os.sep)) + '.csv'
+    print(dst_path)
+    save_prediction(prediction, predict_target, dst_path)
+    find_5_best_film_to_see(dst_path, config.data.movie_title_path)
 
     
 def save_prediction(prediction, predict_target, dst_path):

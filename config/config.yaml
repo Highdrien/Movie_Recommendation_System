@@ -31,5 +31,5 @@ train:
 
 # prediction options
 predict:
-    src_path: data/prediction/ratings.csv
-    dst_path: data/prediction/predict.csv
+    src_path: prediction/ratings.csv
+    dst_path: prediction/predict.csv
