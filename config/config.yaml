@@ -3,33 +3,32 @@ name: experiment                        # name of the config. DOES NOT HAVE SPAC
 
 # model options
 model:
-    loss: MaskedMSELoss                 # Loss function
     learning_rate: 0.001                # learning rate
     embedding_dim: 8                    # movie embedding dimention. If 0, use the model without embedding
     hidden_layer_1: 16                  # output dimention of the first GCN
     hidden_layer_2: 8                   # output dimention of the second GCN
     hidden_layer_3: 2                   # output dimention of the linear layer
-    dropout: 0.15                       # dropout probability
-    end_function: sigmoid               # function at the end. can be sigmoid, clamp, tanh, None 
+    dropout: 0.1                        # dropout probability
+    end_function: softmax               # function at the end. can be sigmoid, clamp, tanh, None or softmax
     save_checkpoint: best               # if you want save the models weight: all, last, best or false
 
 
 # data options
 data:
     path: data                          # data folder
-    movie_title_path: data/Movie_Id_Titles.csv
+    movie_file: Movie_Id_Titles.csv     # file name with the name of all the movie
     num_items: 1682                     # number of items (movie)
     split_1: 0.6                        # proportion of the training dataset
     split_2: 0.2                        # proportion of the validation dataset
 
 # train options
 train:
-    epochs: 50                          # number of epochs
+    epochs: 100                         # number of epochs
     logs: true                          # save the experiments
     save_learning_curves: true          # save the learning curves
     logs_path: logs                     # path to logs folder
 
 # prediction options
 predict:
-    src_path: prediction/ratings.csv
-    dst_path: prediction/predict.csv
+    src_path: prediction/ratings.csv    # Graph path to be predicted
+    dst_path: prediction/predict.csv    # Output of the model

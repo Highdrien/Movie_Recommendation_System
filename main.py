@@ -28,7 +28,34 @@ def find_config(experiment_path):
     exit()
 
 
+def check_options(options):
+    """
+    Check if all the options is good
+    """
+    mode_list = ['train', 'test', 'train_and_test', 'predict']
+    default_config = os.path.join('configs', 'config.yaml')
+
+    if options['mode'] not in mode_list:
+        print('\nERROR: incorect mode. You chose: ' + str(options['mode']) + '. Please chose a mode between:')
+        print(mode_list)
+        print('with adding --mode <your_mode>')
+        exit()
+    
+    if options['mode'] == 'train' and options['config_path'] is None:
+        options['config_path'] = default_config
+        print("You chose the config:", default_config)
+
+    if options['mode'] in ['test', 'predict'] and options['path'] is None:
+        print('ERROR: please chose an experiment path for your', options['mode'])
+        exit()
+    
+    return options
+   
+
 def main(options):
+
+    options = check_options(options)
+
     if options['mode'] == 'train':
         config = load_config(options['config_path'])
         train(config)
@@ -49,14 +76,6 @@ def main(options):
         config_path = os.path.join(options['path'], find_config(options['path']))
         config = load_config(config_path)
         predict(options['path'], config)
-
-    else:
-        print('ERROR: mode incorect. You chose: ' + options['mode'] + '. Please chose a mode between:')
-        print('- train')
-        print('- test')
-        print('- train_and_test')
-        print('- predict')
-        exit()
 
 
 if __name__ == "__main__":
