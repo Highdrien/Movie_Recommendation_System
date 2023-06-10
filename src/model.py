@@ -31,10 +31,12 @@ class MovieRecommendationModel(nn.Module):
         
         Return:
             The predicted rating matrix.
-            if self.end_function='sigmoid', then the function f(x)=4*sigmoid(x)+1 
-                will be applied on all the element of the rating matrix
-            if self.end_function='clamp', then the function f(x)=max(min(x, 1), 5)
-                will be applied on all the element of the rating matrix
+
+            You can choose a end_funtion which will be applied at each elements 
+            of the rating matrix in order to have number between 1 and 5 
+            if self.end_function='sigmoid', then the function f(x) = 4 * sigmoid(x) + 1
+            if self.end_function='clamp', then the function f(x) = max( min(x, 1), 5)
+            if self.end_function='tanh', then the function f(x) = 2 * tanh(x) + 3
             otherwise, the element of rating matrix might not be between 1 and 5
         """
         x = x.unsqueeze(dim=-1).float()
@@ -57,6 +59,9 @@ class MovieRecommendationModel(nn.Module):
         
         elif self.end_function == 'clamp':
             result = torch.clamp(result, min=1, max=5)
+        
+        elif self.end_function == 'tanh':
+            result = 2 * torch.tanh(result) + 3
 
         return result
     
@@ -70,14 +75,20 @@ class MovieRecommendationModel_withMovieEmbedding(nn.Module):
                  hidden_layer_3: int,
                  dropout: float,
                  end_function: bool,
+                 max_users: int,
                  num_items: int) -> None:
         super(MovieRecommendationModel_withMovieEmbedding, self).__init__()
         self.embedding = nn.Embedding(num_items + 1, embedding_dim)
         self.conv1 = GCNConv(embedding_dim, hidden_layer_1)
         self.conv2 = GCNConv(hidden_layer_1, hidden_layer_2)
         self.linear = nn.Linear(hidden_layer_2, hidden_layer_3)
+        self.linear_after_matmul = nn.Linear(1, 5)
         self.dropout = nn.Dropout(dropout)
         self.end_function = end_function
+        self.num_items = num_items
+        self.max_users = max_users
+        if end_function == 'softmax':
+            self.softmax = nn.Softmax(dim=2)
 
     def forward(self,
                 x: torch.tensor,
@@ -95,7 +106,7 @@ class MovieRecommendationModel_withMovieEmbedding(nn.Module):
         x = F.relu(x)
         x = self.dropout(x)
         x = self.linear(x)
-        x = F.relu(x)
+        # x = F.relu(x)
         x = self.dropout(x)
         users = x[:num_users, :]
         items = x[num_users:, :]
@@ -107,7 +118,21 @@ class MovieRecommendationModel_withMovieEmbedding(nn.Module):
         
         elif self.end_function == 'clamp':
             result = torch.clamp(result, min=1, max=5)
-
+        
+        elif self.end_function == 'tanh':
+            result = 2 * torch.tanh(result) + 3
+        
+        elif self.end_function == 'softmax':
+            result.requires_grad_(True)
+            result = result.flatten()
+            zeros_tensor = torch.zeros(((self.max_users - num_users) * self.num_items), requires_grad=True)
+            result = torch.cat((result, zeros_tensor), dim=0)
+            result = self.linear_after_matmul(result.unsqueeze(1))
+            result = result[:num_users * self.num_items]
+            index = torch.arange(num_users * self.num_items).reshape(num_users, self.num_items)
+            result = result[index]
+            result = self.softmax(result)
+    
         return result
 
 
@@ -127,6 +152,7 @@ def get_model(config):
                                                             hidden_layer_3=config.model.hidden_layer_3,
                                                             dropout=config.model.dropout,
                                                             end_function=config.model.end_function,
-                                                            num_items=config.data.num_items)
+                                                            num_items=config.data.num_items,
+                                                            max_users=600)
     # print(model)
     return model

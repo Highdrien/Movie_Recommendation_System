@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 
 class MaskedMSELoss(nn.Module):
@@ -17,33 +18,26 @@ class MaskedMSELoss(nn.Module):
         return loss
 
 
-# class AdvancedMaskedMSELoss(nn.Module):
-#     def __init__(self):
-#         super(AdvancedMaskedMSELoss, self).__init__()
-#         self.mse_loss = nn.MSELoss(reduction='none')
+class MaskedCrossEntropyLoss(nn.Module):
+    def __init__(self):
+        super(MaskedCrossEntropyLoss, self).__init__()
+        self.cross_entropy_loss = nn.CrossEntropyLoss(reduction='none')
+        self.num_classes = 5
 
-#     def forward(self, target, predict):
-#         target = target.flatten().float()
-#         predict = predict.flatten().float()
+    def forward(self, target: torch.tensor, predict: torch.tensor):
+        mask = (target != 0).float()  # Créer un masque binaire où 0 devient 0 et tout autre nombre devient 1
 
-#         mask = (target != 0).float()  # Créer un masque binaire où 0 devient 0 et tout autre nombre devient 1
+        # Convertir la cible en vecteurs one-hot
+        one_hot_target = F.one_hot(target.long(), num_classes=self.num_classes + 1).float()
+        one_hot_target = one_hot_target[:, :, 1:]
         
-#         # Calculer la loss pour les cases où target != 0
-#         non_zero_mask = mask.clone()
-#         loss_non_zero = self.mse_loss(predict, target) * non_zero_mask
+        masked_predict = predict * mask.unsqueeze(2)  # Appliquer le masque à la prédiction
+        masked_target = one_hot_target * mask.unsqueeze(2)  # Appliquer le masque à la cible
         
-#         # Appliquer la logique avancée pour les cases où target = 0
-#         zero_mask = (target == 0).float()
-#         less_than_1_mask = (predict < 1).float()
-#         greater_than_5_mask = (predict > 5).float()
+        masked_predict = masked_predict.view(-1, self.num_classes)  # Aplatir la prédiction
+        masked_target = masked_target.view(-1, self.num_classes)  # Aplatir la cible
         
-#         # Calculer la loss lorsque predict < 1 et target = 0
-#         loss_less_than_1 = self.mse_loss(predict, torch.ones_like(predict)) * zero_mask * less_than_1_mask
-        
-#         # Calculer la loss lorsque predict > 5 et target = 0
-#         loss_greater_than_5 = self.mse_loss(predict, torch.ones_like(predict) * 5) * zero_mask * greater_than_5_mask
-        
-#         # Combinaison des différentes losses
-#         loss = torch.mean(loss_non_zero) + torch.mean(loss_less_than_1) + torch.mean(loss_greater_than_5)
-        
-#         return loss
+        loss = self.cross_entropy_loss(masked_predict, masked_target)
+        loss = torch.mean(loss)
+       
+        return loss

@@ -25,11 +25,13 @@ def predict(logging_path, config):
     with torch.no_grad():
         model.eval()
         prediction = model(predict_ids, predict_edge_index, predict_num_users)
+        if len(prediction.shape) == 3:
+            prediction = torch.argmax(prediction, dim=2)
     
     dst_path = config.predict.dst_path[:-4] + '_' + os.path.basename(logging_path.rstrip(os.sep)) + '.csv'
     print(dst_path)
     save_prediction(prediction, predict_target, dst_path)
-    find_5_best_film_to_see(dst_path, config.data.movie_title_path)
+    find_5_best_film_to_see(dst_path, os.path.join(config.data.path, config.data.movie_file))
 
     
 def save_prediction(prediction, predict_target, dst_path):

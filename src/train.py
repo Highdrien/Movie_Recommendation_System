@@ -4,7 +4,7 @@ import torch
 import torch.optim as optim
 
 from src.model import get_model
-from src.loss import MaskedMSELoss
+from src.loss import MaskedMSELoss, MaskedCrossEntropyLoss
 from src.dataloader import get_data
 from src.utils import save_learning_curves
 from src.checkpoints import save_checkpoint_all, save_checkpoint_best, save_checkpoint_last
@@ -31,8 +31,13 @@ def train(config):
     model = get_model(config)
 
     # Loss and Optimizer
-    criterion = MaskedMSELoss()
-    # criterion = AdvancedMaskedMSELoss()
+    if config.model.embedding_dim == 0 or config.model.end_function != 'softmax':
+        criterion = MaskedMSELoss()
+        config.model.loss = 'MaskedMSELoss'
+    else:
+        criterion = MaskedCrossEntropyLoss()
+        config.model.loss = 'MaskedCrossEntropyLoss'
+
     optimizer = optim.Adam(model.parameters(), lr=config.model.learning_rate)
 
     if config.train.logs:
@@ -49,7 +54,7 @@ def train(config):
         # Training
         model.train()
         train_predict = model(train_ids, train_edge_index, train_num_users)
-        loss = criterion(target=train_target, predict=train_predict)
+        loss = criterion(target=train_target.float(), predict=train_predict)
         train_loss = loss.item()
         train_loss_list.append(train_loss)
         loss.backward()

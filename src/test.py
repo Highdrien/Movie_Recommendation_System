@@ -1,7 +1,7 @@
 import torch
 
 from src.model import get_model
-from src.loss import MaskedMSELoss
+from src.loss import MaskedMSELoss, MaskedCrossEntropyLoss
 from src.dataloader import get_data
 from src.checkpoints import get_checkpoint_path
 
@@ -22,7 +22,12 @@ def test(logging_path, config):
     model.load_state_dict(torch.load(checkpoint_path))
 
     # Loss
-    criterion = MaskedMSELoss()
+    if config.model.loss == 'MaskedMSELoss':
+        criterion = MaskedMSELoss()
+    elif config.model.loss == 'MaskedCrossEntropyLoss':
+        criterion = MaskedCrossEntropyLoss()
+    else:
+        raise 'Error: loss must be MaskedMSELoss or MaskedCrossEntropyLoss but found ' + str(config.model.loss)
 
     # Final evaluation on the test's dataset
     model.eval()
@@ -34,5 +39,5 @@ def test(logging_path, config):
         test_loss = loss.item()
 
     print('test loss:', test_loss)
-    test_logger(logging_path, ['MaskedMSELoss'], [test_loss])
+    test_logger(logging_path, [config.model.loss], [test_loss])
 
