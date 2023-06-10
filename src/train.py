@@ -101,4 +101,7 @@ def train(config):
     print('best val loss:', best_val_loss, 'in the epoch:', best_epoch)
 
     if config.train.logs:
-        return logging_path
+        return logging_path, best_val_loss
+
+    else:
+        return "", best_val_loss

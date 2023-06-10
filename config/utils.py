@@ -22,6 +22,8 @@ def train_logger(config):
     create train_log.csv which will contain the loss and metrics values
     """
     path = config.train.logs_path
+    if not os.path.exists(path):
+        os.mkdir(path)
     folder_name = number_folder(path, config.name + '_')
     path = os.path.join(path, folder_name)
     os.mkdir(path)

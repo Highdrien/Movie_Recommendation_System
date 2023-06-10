@@ -4,12 +4,13 @@ name: experiment                        # name of the config. DOES NOT HAVE SPAC
 # model options
 model:
     learning_rate: 0.001                # learning rate
-    embedding_dim: 8                    # movie embedding dimention. If 0, use the model without embedding
-    hidden_layer_1: 16                  # output dimention of the first GCN
+    embedding_dim: 2                    # movie embedding dimention. If 0, use the model without embedding
+    hidden_layer_1: 32                  # output dimention of the first GCN
     hidden_layer_2: 8                   # output dimention of the second GCN
     hidden_layer_3: 2                   # output dimention of the linear layer
     dropout: 0.1                        # dropout probability
-    end_function: softmax               # function at the end. can be sigmoid, clamp, tanh, None or softmax
+    middle_function: relu
+    end_function: sigmoid               # function at the end. can be sigmoid, clamp, tanh, None or softmax
     save_checkpoint: best               # if you want save the models weight: all, last, best or false
 
 
@@ -23,7 +24,7 @@ data:
 
 # train options
 train:
-    epochs: 100                         # number of epochs
+    epochs: 200                         # number of epochs
     logs: true                          # save the experiments
     save_learning_curves: true          # save the learning curves
     logs_path: logs                     # path to logs folder
