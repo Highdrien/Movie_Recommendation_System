@@ -73,7 +73,7 @@ class MovieRecommendationModel(nn.Module):
         x = F.relu(x)
         x = self.dropout(x)
         x = self.linear(x)
-        x = torch.sigmoid(x)
+        x = self.apply_middle_function(x)
 
         users = x[:num_users, :]
         items = x[num_users:, :]

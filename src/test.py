@@ -21,11 +21,20 @@ def test(logging_path, config):
     checkpoint_path = get_checkpoint_path(config, logging_path)
     model.load_state_dict(torch.load(checkpoint_path))
 
+    loss_and_metrics = []
+    loss_and_metrics_value = []
+
     # Loss
     if config.model.loss == 'MaskedMSELoss':
         criterion = MaskedMSELoss()
+        loss_and_metrics.append('MaskedMSELoss')
+
     elif config.model.loss == 'MaskedCrossEntropyLoss':
         criterion = MaskedCrossEntropyLoss()
+        metric = MaskedMSELoss()
+        loss_and_metrics.append('MaskedCrossEntropyLoss')
+        loss_and_metrics.append('MaskedMSELoss')
+
     else:
         raise 'Error: loss must be MaskedMSELoss or MaskedCrossEntropyLoss but found ' + str(config.model.loss)
 
@@ -36,8 +45,11 @@ def test(logging_path, config):
         model.eval()
         test_predict = model(test_ids, test_edge_index, test_num_users)
         loss = criterion(target=test_target, predict=test_predict)
-        test_loss = loss.item()
+        loss_and_metrics_value.append(loss.item())
+        if config.model.loss == 'MaskedCrossEntropyLoss':
+            test_metric = metric(target=test_target, predict=torch.argmax(test_predict, dim=2))
+            loss_and_metrics_value.append(test_metric.item())
 
-    print('test loss:', test_loss)
-    test_logger(logging_path, [config.model.loss], [test_loss])
+    print('test loss:', loss_and_metrics_value)
+    test_logger(logging_path, loss_and_metrics, loss_and_metrics_value)
 
