@@ -6,8 +6,8 @@ RANDOM_SEARCH_PATH = os.path.join('logs','random_search')
 RANDOM_SEARCH_LOGS_PATH = os.path.join(RANDOM_SEARCH_PATH, 'random_search_logs.csv')
 RS_DICO = {'learning_rate':     [0.01, 0.005, 0.001],
             'embedding_dim':    [0, 0, 0, 4, 8, 16, 32],
-            'hidden_layer_1':   [4, 8, 16, 34, 64],
-            'hidden_layer_2':   [8, 16, 34],
+            'hidden_layer_1':   [4, 8, 16, 32, 64],
+            'hidden_layer_2':   [8, 16, 32],
             'hidden_layer_3':   [1, 2, 4, 8],
             'dropout':          [0, 0.05, 0.1, 0.15],
             'middle_function':  ['relu', 'sigmoid', 'tanh', None],
