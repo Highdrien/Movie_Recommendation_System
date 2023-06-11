@@ -3,7 +3,7 @@ import csv
 from tkinter import Tk, Label, Button, Frame
 
 # Chemin du fichier CSV contenant la liste des films
-fichier_films = os.path.join('..', 'Movie_Id_Titles.csv')
+fichier_films = os.path.join('..', 'data', 'Movie_Id_Titles.csv')
 fichier_sortie = 'films_vu.csv'
 
 # Définition des fonctions pour les boutons Oui/Non
