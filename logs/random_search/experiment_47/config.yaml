@@ -1,0 +1,35 @@
+config_metadata: 'Saving time : 06/10/2023, 18:42:56'
+name: 'experiment'
+
+# model options
+model:
+    learning_rate: 0.005
+    embedding_dim: 32
+    hidden_layer_1: 4
+    hidden_layer_2: 8
+    hidden_layer_3: 4
+    dropout: 0.05
+    middle_function: null
+    end_function: 'tanh'
+    save_checkpoint: 'best'
+    loss: 'MaskedMSELoss'
+
+# data options
+data:
+    path: 'data'
+    movie_file: 'Movie_Id_Titles.csv'
+    num_items: 1682
+    split_1: 0.6
+    split_2: 0.2
+
+# train options
+train:
+    epochs: 200
+    logs: true
+    save_learning_curves: true
+    logs_path: 'logs\random_search'
+
+# predict options
+predict:
+    src_path: 'prediction/ratings.csv'
+    dst_path: 'prediction/predict.csv'

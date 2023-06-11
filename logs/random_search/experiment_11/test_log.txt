@@ -1,0 +1,2 @@
+MaskedCrossEntropyLoss: 0.0897703468799591
+MaskedMSELoss: 0.08845672756433487
