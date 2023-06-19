@@ -1,5 +1,7 @@
 # Movie Recommendator System
 
+The aim of this project is to recommend films to users. We have a database (kaggle) which contains a list of films and a set of users who have rated these films between 1 and 5 depending on whether they liked them or not (5 being the best rating). Then we use grapg neureune network to predict the ratings of these users for films they haven't yet seen. All we have to do is recommend the films with the highest ratings.
+
 - [Movie Recommendator System](#movie-recommendator-system)
 - [Requirements](#requirements)
 - [Run the code](#run-the-code)

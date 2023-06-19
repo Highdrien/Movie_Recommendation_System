@@ -1,5 +1,5 @@
 __pycache__
-logs/random_search/exp*
+logs/*
 !logs/random_search/experiment_11
 !logs/random_search/experiment_35
 !logs/random_search/experiment_47
